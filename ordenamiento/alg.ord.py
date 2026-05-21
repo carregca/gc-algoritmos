@@ -53,11 +53,27 @@ def insertion_sort(lista):
         lista[j + 1] = actual
     return lista
 
-tamaños = list(range(100, 5000, 100))
+def quick_sort(lista):
+    if len(lista) <= 1: #se fija que el largo de la lista sea mayor a 1
+        return lista
+    pivote = lista[0] #elije el numero pivote, en este caso el primero
+    menores = [] # crea 2 listas en memoria para aplicar recursividad
+    mayores = []
+    for i in range(1, len(lista)): #agarra toda la lista y la divide en las listas en memoria menores y mayores
+        if lista[i] < pivote: #para eso compara con el num pivot, sies mayor se agrega a mayores si es menor a menores
+            menores.append(lista[i])
+        else:
+            mayores.append(lista[i])
+    return quick_sort(menores) + [pivote] + quick_sort(mayores)#aplica quicksort a estas nuevas listas y las printea los menores a la izq,luego el pivot y luego los mayores
+
+
+
+tamaños = list(range(100, 1000, 100))
 
 tiempos_bubble = []
 tiempos_selection = []
 tiempos_insertion = []
+tiempos_quick =[]
 
 repeticiones = 5
 
@@ -66,6 +82,7 @@ for n in tamaños:
     total_bubble = 0
     total_selection = 0
     total_insertion = 0
+    total_quick= 0
 
     for _ in range(repeticiones):
 
@@ -93,18 +110,27 @@ for n in tamaños:
         insertion_sort(lista_insertion)
         fin = time.perf_counter()
         total_insertion += (fin - inicio)
+        
+        #quick sort
+        lista_quick=lista_original.copy()
+        inicio = time.perf_counter()
+        quick_sort(lista_quick)
+        fin = time.perf_counter()
+        total_quick += (fin-inicio)
 
     tiempos_bubble.append(total_bubble / repeticiones)
     tiempos_selection.append(total_selection / repeticiones)
     tiempos_insertion.append(total_insertion / repeticiones)
+    tiempos_quick.append(total_quick/repeticiones)
 
 
 plt.figure(figsize=(10,5))
 plt.plot(tamaños, tiempos_bubble, label="Bubble Sort")
 plt.plot(tamaños, tiempos_selection, label="Selection Sort")
 plt.plot(tamaños, tiempos_insertion, label="Insertion Sort")
+plt.plot(tamaños, tiempos_quick, label="quick Sort")
 
-plt.title("Comparación Bubble Sort vs Selection Sort")
+plt.title("Comparación de algoritmos de ord")
 plt.xlabel("Tamaño de la lista")
 plt.ylabel("Tiempo (segundos)")
 plt.legend()
